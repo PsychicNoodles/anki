@@ -40,7 +40,7 @@ pub struct Counts {
 
 impl CardQueues {
     /// Get the next due card, if there is one.
-    fn next_entry(&mut self, now: TimestampSecs) -> Option<QueueEntry> {
+    pub fn next_entry(&mut self, now: TimestampSecs) -> Option<QueueEntry> {
         self.next_learning_entry_due_before_now(now)
             .map(Into::into)
             .or_else(|| self.next_main_entry())
@@ -49,7 +49,7 @@ impl CardQueues {
 
     /// Remove the provided card from the top of the learning or main queues.
     /// If it was not at the top, return an error.
-    fn pop_answered(&mut self, id: CardID) -> Result<()> {
+    pub fn pop_answered(&mut self, id: CardID) -> Result<()> {
         if self.pop_main_entry(id).is_none() && self.pop_learning_entry(id).is_none() {
             Err(AnkiError::invalid_input("not at top of queue"))
         } else {
@@ -57,7 +57,7 @@ impl CardQueues {
         }
     }
 
-    fn counts(&self) -> Counts {
+    pub fn counts(&self) -> Counts {
         Counts {
             new: self.new_count,
             learning: self.learn_count,
@@ -65,18 +65,22 @@ impl CardQueues {
         }
     }
 
-    fn is_stale(&self, deck: DeckID, current_day: u32) -> bool {
+    pub fn is_stale(&self, deck: DeckID, current_day: u32) -> bool {
         self.selected_deck != deck || self.current_day != current_day
     }
 
-    fn update_after_answering_card(&mut self, card: &Card, timing: SchedTimingToday) -> Result<()> {
+    pub fn update_after_answering_card(
+        &mut self,
+        card: &Card,
+        timing: SchedTimingToday,
+    ) -> Result<()> {
         self.pop_answered(card.id)?;
         self.maybe_requeue_learning_card(card, timing);
         Ok(())
     }
 
     /// Add a just-undone card back to the appropriate queue, updating counts.
-    pub(crate) fn push_undone_card(&mut self, card: &Card) {
+    pub fn push_undone_card(&mut self, card: &Card) {
         if card.is_intraday_learning() {
             self.push_due_learning_card(LearningQueueEntry {
                 due: TimestampSecs(card.due as i64),
@@ -90,14 +94,14 @@ impl CardQueues {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub(crate) struct QueueEntry {
-    id: CardID,
-    mtime: TimestampSecs,
-    kind: QueueEntryKind,
+pub struct QueueEntry {
+    pub id: CardID,
+    pub mtime: TimestampSecs,
+    pub kind: QueueEntryKind,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq)]
-pub(crate) enum QueueEntryKind {
+pub enum QueueEntryKind {
     New,
     /// Includes day-learning cards
     Review,
