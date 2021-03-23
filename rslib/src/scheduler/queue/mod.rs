@@ -17,7 +17,7 @@ pub(crate) use builder::{DueCard, NewCard};
 use super::timing::SchedTimingToday;
 
 #[derive(Debug)]
-pub(crate) struct CardQueues {
+pub struct CardQueues {
     new_count: usize,
     review_count: usize,
     learn_count: usize,
@@ -32,7 +32,7 @@ pub(crate) struct CardQueues {
 }
 
 #[derive(Debug)]
-pub(crate) struct Counts {
+pub struct Counts {
     new: usize,
     learning: usize,
     review: usize,
@@ -189,7 +189,7 @@ impl Collection {
         }
     }
 
-    fn get_queues(&mut self) -> Result<&mut CardQueues> {
+    pub fn get_queues(&mut self) -> Result<&mut CardQueues> {
         let timing = self.timing_today()?;
         let deck = self.get_current_deck_id();
         let need_rebuild = self
