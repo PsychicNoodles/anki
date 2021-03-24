@@ -198,9 +198,13 @@ impl Collection {
         b.0
     }
 
-    pub(crate) fn get_current_deck_id(&self) -> DeckID {
+    pub fn get_current_deck_id(&self) -> DeckID {
         self.get_config_optional(ConfigKey::CurrentDeckID)
             .unwrap_or(DeckID(1))
+    }
+
+    pub fn set_current_deck_id(&self, deck_id: DeckID) -> Result<()> {
+        self.set_config(ConfigKey::CurrentDeckID, &deck_id)
     }
 
     pub(crate) fn get_creation_utc_offset(&self) -> Option<i32> {
