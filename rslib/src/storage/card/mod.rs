@@ -305,7 +305,7 @@ impl super::SqliteStorage {
             .collect()
     }
 
-    pub(crate) fn all_card_ids_of_note(&self, nid: NoteID) -> Result<Vec<CardID>> {
+    pub fn all_card_ids_of_note(&self, nid: NoteID) -> Result<Vec<CardID>> {
         self.db
             .prepare_cached("select id from cards where nid = ? order by ord")?
             .query_and_then(&[nid], |r| Ok(CardID(r.get(0)?)))?
